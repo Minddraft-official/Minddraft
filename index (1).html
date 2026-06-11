@@ -1,0 +1,1384 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MindDraft — Study without the pressure</title>
+<style>
+  :root {
+    --sage: #8FAF8F;
+    --sage-light: #b8cfb8;
+    --sage-dark: #6a8f6a;
+    --beige: #F5F0E8;
+    --beige-dark: #EDE7D8;
+    --lavender: #C4B8D4;
+    --lavender-light: #ddd6ea;
+    --cream: #FDFAF5;
+    --text: #3D3D3D;
+    --text-muted: #7a7a7a;
+    --white: #ffffff;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --radius-btn: 50px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 32px rgba(0,0,0,0.10);
+    --transition: 0.3s ease;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+  a { text-decoration: none; color: inherit; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(253,250,245,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--beige-dark); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-size: 1.3rem; font-weight: 600; color: var(--sage-dark); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+  .nav-links { display: flex; align-items: center; gap: 20px; }
+  .nav-links a { color: var(--text-muted); font-size: 0.9rem; transition: color var(--transition); }
+  .nav-links a:hover { color: var(--sage-dark); }
+  .nav-cta { background: var(--sage); color: white; padding: 8px 20px; border-radius: var(--radius-btn); font-size: 0.85rem; font-weight: 500; transition: all var(--transition); border: none; cursor: pointer; }
+  .nav-cta:hover { background: var(--sage-dark); transform: translateY(-1px); }
+
+  .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 100px 24px 60px; background: linear-gradient(160deg, var(--cream) 0%, var(--beige) 50%, #e8e2f0 100%); position: relative; overflow: hidden; flex-direction: column; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(196,184,212,0.3) 0%, transparent 70%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(143,175,143,0.25) 0%, transparent 70%); pointer-events: none; }
+  .hero-content { max-width: 680px; position: relative; z-index: 1; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--white); border: 1px solid var(--beige-dark); color: var(--text-muted); font-size: 0.8rem; padding: 6px 14px; border-radius: var(--radius-btn); margin-bottom: 28px; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 500; line-height: 1.15; letter-spacing: -1.5px; color: var(--text); margin-bottom: 20px; }
+  .hero h1 em { font-style: normal; color: var(--sage-dark); }
+  .hero p { font-size: 1.15rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 36px; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn-primary { background: var(--sage); color: white; padding: 14px 32px; border-radius: var(--radius-btn); font-size: 1rem; font-weight: 500; border: none; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary:hover { background: var(--sage-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(106,143,106,0.3); }
+  .btn-secondary { background: transparent; color: var(--text-muted); padding: 14px 24px; border-radius: var(--radius-btn); font-size: 0.95rem; border: 1.5px solid var(--beige-dark); cursor: pointer; transition: all var(--transition); }
+  .btn-secondary:hover { border-color: var(--sage); color: var(--sage-dark); }
+  .hero-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 14px; }
+
+  .hero-preview { margin-top: 60px; position: relative; z-index: 1; }
+  .preview-phone { background: var(--white); border-radius: 28px; padding: 28px; box-shadow: 0 24px 64px rgba(0,0,0,0.12); max-width: 360px; margin: 0 auto; border: 1px solid var(--beige-dark); }
+  .preview-mood-bar { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+  .preview-mood-btn { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 2px solid transparent; cursor: pointer; transition: all var(--transition); background: var(--beige); }
+  .preview-mood-btn.active, .preview-mood-btn:hover { border-color: var(--sage); background: var(--sage-light); transform: scale(1.1); }
+  .preview-timer { text-align: center; background: linear-gradient(135deg, var(--beige), var(--lavender-light)); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+  .timer-display-prev { font-size: 3rem; font-weight: 300; letter-spacing: -2px; color: var(--text); }
+  .timer-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  .preview-sounds { display: flex; gap: 8px; }
+  .sound-chip { flex: 1; background: var(--beige); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; transition: all var(--transition); border: 1.5px solid transparent; }
+  .sound-chip:hover, .sound-chip.active { background: var(--lavender-light); border-color: var(--lavender); color: var(--text); }
+
+  section { padding: 80px 24px; }
+  .section-title { text-align: center; margin-bottom: 56px; }
+  .section-title h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; letter-spacing: -0.8px; color: var(--text); margin-bottom: 12px; }
+  .section-title p { color: var(--text-muted); font-size: 1.05rem; max-width: 480px; margin: 0 auto; line-height: 1.65; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .features { background: var(--beige); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .feature-card { background: var(--white); border-radius: var(--radius); padding: 28px; transition: all var(--transition); border: 1px solid var(--beige-dark); }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .feature-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 500; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+  .steps { display: flex; flex-direction: column; gap: 16px; max-width: 640px; margin: 0 auto; }
+  .step { display: flex; gap: 20px; align-items: flex-start; background: var(--white); border-radius: var(--radius); padding: 24px; border: 1px solid var(--beige-dark); transition: all var(--transition); }
+  .step:hover { border-color: var(--sage-light); box-shadow: var(--shadow); }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--sage-light); color: var(--sage-dark); font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-text h3 { font-size: 1rem; font-weight: 500; margin-bottom: 4px; }
+  .step-text p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; }
+
+  .moods-section { background: linear-gradient(135deg, var(--beige) 0%, #ede8f5 100%); }
+  .moods-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .mood-card { background: var(--white); border-radius: var(--radius); padding: 24px 20px; text-align: center; border: 1px solid transparent; transition: all var(--transition); }
+  .mood-card:hover { border-color: var(--lavender); transform: translateY(-3px); box-shadow: var(--shadow); }
+  .mood-emoji { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+  .mood-card h3 { font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; }
+  .mood-card p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+  .mood-tag { display: inline-block; margin-top: 10px; font-size: 0.75rem; background: var(--beige); padding: 3px 10px; border-radius: var(--radius-btn); color: var(--sage-dark); }
+
+  .testimonials { background: var(--cream); }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .testimonial { background: var(--white); border-radius: var(--radius); padding: 28px; border: 1px solid var(--beige-dark); transition: all var(--transition); }
+  .testimonial:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+  .testimonial-text { font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+  .author-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .author-info strong { font-size: 0.875rem; display: block; font-weight: 500; }
+  .author-info span { font-size: 0.8rem; color: var(--text-muted); }
+  .stars { color: #d4a853; font-size: 0.8rem; margin-bottom: 12px; }
+
+  .pricing { background: var(--beige); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 700px; margin: 0 auto; }
+  .pricing-card { background: var(--white); border-radius: var(--radius); padding: 36px; border: 1.5px solid var(--beige-dark); transition: all var(--transition); position: relative; }
+  .pricing-card.featured { border-color: var(--lavender); background: linear-gradient(160deg, var(--white), #f5f2ff); }
+  .pricing-card.featured .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--lavender); color: var(--text); font-size: 0.75rem; font-weight: 500; padding: 4px 14px; border-radius: var(--radius-btn); white-space: nowrap; }
+  .pricing-card h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 8px; }
+  .price { font-size: 2.6rem; font-weight: 300; letter-spacing: -1px; margin: 16px 0 4px; }
+  .price span { font-size: 1rem; color: var(--text-muted); }
+  .pricing-desc { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+  .pricing-features { list-style: none; margin-bottom: 28px; }
+  .pricing-features li { font-size: 0.875rem; color: var(--text-muted); padding: 8px 0; border-bottom: 1px solid var(--beige); display: flex; align-items: center; gap: 8px; }
+  .pricing-features li:last-child { border-bottom: none; }
+  .pricing-features li::before { content: '✓'; color: var(--sage); font-weight: 600; flex-shrink: 0; }
+  .btn-plan { width: 100%; padding: 13px; border-radius: var(--radius-btn); font-size: 0.95rem; cursor: pointer; transition: all var(--transition); font-weight: 500; }
+  .btn-free { background: transparent; border: 1.5px solid var(--sage); color: var(--sage-dark); }
+  .btn-free:hover { background: var(--sage); color: white; }
+  .btn-premium { background: var(--lavender); border: none; color: var(--text); }
+  .btn-premium:hover { background: #b3a5c8; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(196,184,212,0.4); }
+
+  .cta-banner { background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%); padding: 80px 24px; text-align: center; color: white; }
+  .cta-banner h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400; letter-spacing: -0.8px; margin-bottom: 14px; }
+  .cta-banner p { font-size: 1.05rem; opacity: 0.85; margin-bottom: 32px; max-width: 460px; margin-left: auto; margin-right: auto; line-height: 1.65; }
+  .btn-white { background: white; color: var(--sage-dark); padding: 14px 32px; border-radius: var(--radius-btn); font-size: 1rem; font-weight: 500; border: none; cursor: pointer; transition: all var(--transition); }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+  footer { background: var(--text); color: rgba(255,255,255,0.7); padding: 48px 24px; text-align: center; }
+  .footer-logo { font-size: 1.2rem; font-weight: 500; color: white; margin-bottom: 12px; }
+  footer p { font-size: 0.85rem; line-height: 1.65; }
+  .footer-links { display: flex; gap: 20px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .footer-links a { font-size: 0.8rem; color: rgba(255,255,255,0.5); transition: color var(--transition); }
+  .footer-links a:hover { color: white; }
+
+  /* ─── APP OVERLAY ─── */
+  #app-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: var(--cream); overflow-y: auto; }
+  #app-overlay.open { display: block; animation: slideUp 0.4s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .app-nav { position: sticky; top: 0; background: rgba(253,250,245,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--beige-dark); padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
+  .app-nav-logo { font-size: 1.1rem; font-weight: 600; color: var(--sage-dark); }
+  .app-close { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); transition: color var(--transition); padding: 8px; }
+  .app-close:hover { color: var(--text); }
+  .app-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--beige-dark); background: var(--white); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .app-tabs::-webkit-scrollbar { display: none; }
+  .app-tab { flex-shrink: 0; padding: 14px 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: all var(--transition); display: flex; align-items: center; gap: 6px; white-space: nowrap; background: none; border-left: none; border-right: none; border-top: none; }
+  .app-tab.active { color: var(--sage-dark); border-bottom-color: var(--sage); }
+  .app-tab:hover:not(.active) { color: var(--text); background: var(--beige); }
+  .app-content { padding: 24px 20px; max-width: 600px; margin: 0 auto; }
+  .app-view { display: none; animation: fadeIn 0.3s ease; }
+  .app-view.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ─── MOOD ─── */
+  .mood-checkin-title { text-align: center; margin-bottom: 32px; }
+  .mood-checkin-title h2 { font-size: 1.5rem; font-weight: 400; margin-bottom: 8px; }
+  .mood-checkin-title p { color: var(--text-muted); font-size: 0.9rem; }
+  .mood-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 32px; }
+  .mood-btn { background: var(--beige); border: 2px solid transparent; border-radius: var(--radius); padding: 18px 8px; text-align: center; cursor: pointer; transition: all var(--transition); }
+  .mood-btn:hover, .mood-btn.selected { border-color: var(--sage); background: var(--sage-light); }
+  .mood-btn .em { font-size: 2rem; display: block; margin-bottom: 6px; }
+  .mood-btn .label { font-size: 0.7rem; color: var(--text-muted); }
+  .mood-recommendation { background: linear-gradient(135deg, var(--beige), var(--lavender-light)); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; display: none; }
+  .mood-recommendation.visible { display: block; animation: fadeIn 0.4s ease; }
+  .rec-title { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rec-item { background: rgba(255,255,255,0.7); border-radius: var(--radius-sm); padding: 14px; }
+  .rec-item .rec-icon { font-size: 1.3rem; margin-bottom: 6px; }
+  .rec-item h4 { font-size: 0.8rem; font-weight: 500; margin-bottom: 2px; }
+  .rec-item p { font-size: 0.75rem; color: var(--text-muted); }
+  .breathing-box { background: var(--white); border-radius: var(--radius); padding: 24px; text-align: center; border: 1px solid var(--beige-dark); }
+  .breathing-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--sage-light); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--sage-dark); font-weight: 500; cursor: pointer; transition: all 0.8s ease; border: 3px solid var(--sage); }
+  .breathing-circle.expand { transform: scale(1.3); background: var(--lavender-light); border-color: var(--lavender); }
+
+  /* ─── TIMER ─── */
+  .timer-container { text-align: center; padding: 20px 0; }
+  .timer-modes { display: flex; gap: 8px; justify-content: center; margin-bottom: 28px; }
+  .timer-mode-btn { padding: 8px 20px; border-radius: var(--radius-btn); font-size: 0.85rem; cursor: pointer; transition: all var(--transition); border: 1.5px solid var(--beige-dark); background: transparent; color: var(--text-muted); }
+  .timer-mode-btn.active { background: var(--sage); color: white; border-color: var(--sage); }
+  .timer-ring { width: 220px; height: 220px; margin: 0 auto 28px; position: relative; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring-bg { fill: none; stroke: var(--beige-dark); stroke-width: 8; }
+  .timer-ring-fg { fill: none; stroke: var(--sage); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .timer-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .timer-big { font-size: 3.2rem; font-weight: 300; letter-spacing: -2px; color: var(--text); }
+  .timer-phase { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+  .timer-controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .timer-btn { width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.2rem; transition: all var(--transition); display: flex; align-items: center; justify-content: center; }
+  .timer-start { background: var(--sage); color: white; width: 64px; height: 64px; font-size: 1.4rem; }
+  .timer-start:hover { background: var(--sage-dark); transform: scale(1.05); }
+  .timer-reset { background: var(--beige); color: var(--text-muted); }
+  .timer-reset:hover { background: var(--beige-dark); }
+  .timer-skip { background: var(--lavender-light); color: var(--text); }
+  .pomodoro-dots { display: flex; gap: 8px; justify-content: center; }
+  .pom-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--beige-dark); transition: background var(--transition); }
+  .pom-dot.done { background: var(--sage); }
+  .pom-dot.current { background: var(--sage-light); }
+
+  /* ─── JOURNAL ─── */
+  .journal-header { margin-bottom: 20px; }
+  .journal-header h2 { font-size: 1.3rem; font-weight: 400; margin-bottom: 4px; }
+  .journal-date { font-size: 0.85rem; color: var(--text-muted); }
+  .journal-mood-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .journal-mood-tag { padding: 6px 14px; border-radius: var(--radius-btn); font-size: 0.8rem; cursor: pointer; border: 1.5px solid var(--beige-dark); background: var(--beige); transition: all var(--transition); }
+  .journal-mood-tag.selected { background: var(--lavender-light); border-color: var(--lavender); }
+  .journal-textarea { width: 100%; min-height: 160px; border: 1.5px solid var(--beige-dark); border-radius: var(--radius); padding: 16px; font-family: inherit; font-size: 0.95rem; color: var(--text); background: var(--white); resize: vertical; transition: border-color var(--transition); outline: none; line-height: 1.65; }
+  .journal-textarea:focus { border-color: var(--sage); }
+  .journal-textarea::placeholder { color: var(--text-muted); }
+  .journal-save { margin-top: 12px; background: var(--sage); color: white; padding: 12px 28px; border-radius: var(--radius-btn); border: none; font-size: 0.95rem; cursor: pointer; transition: all var(--transition); }
+  .journal-save:hover { background: var(--sage-dark); }
+  .journal-entries { margin-top: 24px; }
+  .journal-entry { background: var(--white); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 10px; border: 1px solid var(--beige-dark); }
+  .entry-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .entry-date { font-size: 0.78rem; color: var(--text-muted); }
+  .entry-mood-badge { font-size: 0.75rem; background: var(--lavender-light); padding: 2px 10px; border-radius: var(--radius-btn); }
+  .entry-text { font-size: 0.875rem; color: var(--text); line-height: 1.6; }
+
+  /* ─── STUDY LOG ─── */
+  .log-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .log-stat { background: var(--white); border-radius: var(--radius-sm); padding: 16px; text-align: center; border: 1px solid var(--beige-dark); }
+  .log-stat-num { font-size: 2rem; font-weight: 300; color: var(--sage-dark); letter-spacing: -1px; }
+  .log-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .mood-chart { background: var(--white); border-radius: var(--radius); padding: 20px; border: 1px solid var(--beige-dark); margin-bottom: 20px; }
+  .mood-chart h3 { font-size: 0.9rem; font-weight: 500; margin-bottom: 16px; color: var(--text-muted); }
+  .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
+  .chart-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .chart-bar { width: 100%; border-radius: 6px 6px 0 0; transition: height 0.6s ease; min-height: 4px; }
+  .chart-day-label { font-size: 0.7rem; color: var(--text-muted); }
+  .log-table-container { background: var(--white); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--beige-dark); }
+  .log-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .log-table th { background: var(--beige); padding: 12px 16px; text-align: left; font-weight: 500; font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+  .log-table td { padding: 12px 16px; border-top: 1px solid var(--beige); color: var(--text); }
+  .log-table tr:hover td { background: var(--beige); }
+
+  /* ─── SETTINGS / MUSIC ─── */
+  .settings-section { margin-bottom: 28px; }
+  .settings-section h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+  .sound-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sound-item { background: var(--beige); border-radius: var(--radius-sm); padding: 16px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all var(--transition); }
+  .sound-item:hover, .sound-item.active { border-color: var(--sage); background: var(--sage-light); }
+  .sound-item .sound-icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
+  .sound-item span { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* Now-Playing dark card */
+  .now-playing-card { background: linear-gradient(135deg, #1e1e2e 0%, #162216 100%); border-radius: var(--radius); padding: 22px; margin-bottom: 18px; }
+  .np-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .np-art { width: 54px; height: 54px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
+  .np-meta { flex: 1; }
+  .np-meta h3 { font-size: 1rem; color: white; font-weight: 500; margin-bottom: 3px; }
+  .np-meta p { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
+  .np-visualizer { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 14px; }
+  .np-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; }
+  .np-bar.active { animation: npb var(--spd, 1s) ease-in-out infinite; }
+  @keyframes npb { 0%,100%{height:3px;opacity:0.3} 50%{opacity:1} }
+  .np-controls { display: flex; align-items: center; gap: 10px; }
+  .np-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; color: rgba(255,255,255,0.8); cursor: pointer; font-size: 0.95rem; transition: all var(--transition); display: flex; align-items: center; justify-content: center; }
+  .np-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+  .np-btn.primary { background: white; color: #1e1e2e; width: 44px; height: 44px; font-size: 1.1rem; }
+  .np-btn.primary:hover { transform: scale(1.06); }
+  .np-vol-wrap { flex: 1; display: flex; align-items: center; gap: 8px; margin-left: 6px; }
+  .np-vol-icon { font-size: 0.9rem; }
+  .np-vol { flex: 1; accent-color: var(--sage-light); cursor: pointer; }
+
+  /* Music tracks list */
+  .music-list { display: flex; flex-direction: column; gap: 8px; }
+  .music-item { background: var(--beige); border-radius: var(--radius-sm); padding: 14px 16px; cursor: pointer; border: 2px solid transparent; transition: all var(--transition); display: flex; align-items: center; gap: 14px; }
+  .music-item:hover { background: var(--beige-dark); }
+  .music-item.active { border-color: var(--lavender); background: var(--lavender-light); }
+  .mi-icon { font-size: 1.5rem; flex-shrink: 0; width: 42px; height: 42px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .mi-info { flex: 1; }
+  .mi-info h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 2px; }
+  .mi-info p { font-size: 0.75rem; color: var(--text-muted); }
+  .mi-eq { display: flex; align-items: center; gap: 2px; opacity: 0; transition: opacity var(--transition); }
+  .music-item.active .mi-eq { opacity: 1; }
+  .mi-eq span { width: 3px; background: var(--lavender); border-radius: 2px; animation: eqw 0.7s ease-in-out infinite; display: block; }
+  .mi-eq span:nth-child(2) { animation-delay: 0.12s; }
+  .mi-eq span:nth-child(3) { animation-delay: 0.24s; }
+  .mi-eq span:nth-child(4) { animation-delay: 0.36s; }
+  @keyframes eqw { 0%,100%{height:4px} 50%{height:16px} }
+
+  .ambient-blend { background: var(--white); border-radius: var(--radius-sm); padding: 16px; border: 1px solid var(--beige-dark); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .ambient-blend span { font-size: 0.875rem; }
+  .blend-vol { width: 100px; accent-color: var(--sage); cursor: pointer; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--white); border-radius: var(--radius-sm); border: 1px solid var(--beige-dark); margin-bottom: 10px; }
+  .toggle-row span { font-size: 0.875rem; }
+  .toggle { width: 44px; height: 24px; background: var(--beige-dark); border-radius: var(--radius-btn); position: relative; cursor: pointer; transition: background var(--transition); flex-shrink: 0; }
+  .toggle.on { background: var(--sage); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: left var(--transition); }
+  .toggle.on::after { left: 23px; }
+  .upgrade-banner { background: linear-gradient(135deg, var(--lavender-light), #ede8f5); border-radius: var(--radius); padding: 24px; text-align: center; border: 1px solid var(--lavender); }
+  .upgrade-banner h3 { font-size: 1.05rem; font-weight: 500; margin-bottom: 8px; }
+  .upgrade-banner p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px; }
+  .btn-upgrade { background: var(--lavender); color: var(--text); padding: 10px 24px; border-radius: var(--radius-btn); border: none; font-size: 0.9rem; cursor: pointer; transition: all var(--transition); }
+  .btn-upgrade:hover { background: #b3a5c8; }
+
+  /* ─── FLOATING MUSIC BAR ─── */
+  .audio-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--white); border: 1px solid var(--beige-dark); border-radius: var(--radius-btn); padding: 10px 18px; display: none; align-items: center; gap: 12px; box-shadow: var(--shadow-hover); z-index: 300; font-size: 0.85rem; min-width: 240px; max-width: 94vw; }
+  .audio-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .audio-wave { display: flex; align-items: center; gap: 3px; }
+  .audio-wave span { width: 3px; background: var(--sage); border-radius: 2px; display: block; animation: wave 1.2s ease-in-out infinite; }
+  .audio-wave span:nth-child(2) { animation-delay: 0.2s; }
+  .audio-wave span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes wave { 0%,100% { height: 6px; } 50% { height: 16px; } }
+  .audio-stop { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; transition: color var(--transition); margin-left: auto; }
+  .audio-stop:hover { color: var(--text); }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--beige); }
+  ::-webkit-scrollbar-thumb { background: var(--sage-light); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .mood-grid { grid-template-columns: repeat(5, 1fr); }
+    .rec-grid { grid-template-columns: 1fr; }
+    .log-stats { grid-template-columns: repeat(3, 1fr); }
+    .timer-ring { width: 180px; height: 180px; }
+    .timer-big { font-size: 2.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>🌿</span> MindDraft</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <button class="nav-cta" onclick="openApp()">Start free session</button>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-badge">🌱 No credit card. No pressure. Just you.</div>
+    <h1>Study without<br/><em>the pressure.</em></h1>
+    <p>MindDraft adapts to how you feel — not how you think you should feel. Check in, focus gently, and build a habit that actually sticks.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="openApp()">✨ Start your first session free</button>
+      <button class="btn-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">See how it works</button>
+    </div>
+    <p class="hero-note">No credit card required · Free forever plan available</p>
+  </div>
+  <div class="hero-preview">
+    <div class="preview-phone">
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-bottom:14px;">How are you feeling today?</p>
+      <div class="preview-mood-bar">
+        <div class="preview-mood-btn">😰</div>
+        <div class="preview-mood-btn">😴</div>
+        <div class="preview-mood-btn active">😵</div>
+        <div class="preview-mood-btn">😊</div>
+        <div class="preview-mood-btn">😐</div>
+      </div>
+      <div class="preview-timer">
+        <div class="timer-display-prev">24:32</div>
+        <div class="timer-label">Focus Session · Pomodoro</div>
+      </div>
+      <div class="preview-sounds">
+        <div class="sound-chip">🌧️ Rain</div>
+        <div class="sound-chip active">🎹 Lo-fi</div>
+        <div class="sound-chip">🤍 White</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>Everything you need, nothing you don't</h2>
+      <p>Built for students who are tired of apps that make studying feel like a second job.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><span class="feature-icon">🫀</span><h3>Mood Check-in</h3><p>A gentle 5-second check-in before every session. MindDraft adapts your environment based on how you actually feel.</p></div>
+      <div class="feature-card"><span class="feature-icon">⏱️</span><h3>Smart Focus Timer</h3><p>Pomodoro or custom blocks. The timer knows when to push and when to give you a break — based on your mood.</p></div>
+      <div class="feature-card"><span class="feature-icon">🎵</span><h3>Music & Ambience</h3><p>Lo-fi beats, piano, jazz chords, ambient drones, rain, white noise. Real music generated in your browser — no streaming required.</p></div>
+      <div class="feature-card"><span class="feature-icon">📓</span><h3>Mood Journal</h3><p>A quiet space to write. Tag your mood, jot thoughts before or after a session. No word counts, no pressure.</p></div>
+      <div class="feature-card"><span class="feature-icon">📊</span><h3>Study Log</h3><p>See your week at a glance — sessions completed, mood trends, and your focus patterns over time.</p></div>
+      <div class="feature-card"><span class="feature-icon">🧘</span><h3>Mental Reset</h3><p>Guided breathing exercises triggered when you're stressed or overwhelmed. 60 seconds to reset before you begin.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-title"><h2>Three steps to a better session</h2><p>No setup. No learning curve. Just open it and start.</p></div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><h3>Check in with your mood</h3><p>Pick one of five emotions. MindDraft uses this to recommend the right study technique, ambient sound, and whether you should do a quick breathing reset first.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><h3>Let MindDraft set the scene</h3><p>Your music starts, the timer is configured for your energy level, and you get a gentle, non-overwhelming plan for the next hour.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><h3>Study, log, and build your streak</h3><p>After each session, your mood and focus are logged. Over time, MindDraft shows you your patterns — peak hours, stress cycles, and what actually works for you.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="moods-section">
+  <div class="container">
+    <div class="section-title"><h2>Every mood gets the right plan</h2><p>MindDraft doesn't ignore how you feel — it builds around it.</p></div>
+    <div class="moods-grid">
+      <div class="mood-card"><span class="mood-emoji">😰</span><h3>Stressed</h3><p>Short blocks, more breaks. Soft rain. 4-7-8 breathing to calm your nervous system.</p><span class="mood-tag">Pomodoro 25/5</span></div>
+      <div class="mood-card"><span class="mood-emoji">😴</span><h3>Tired</h3><p>Lo-fi beats to energize. Spaced repetition to make the most of low focus.</p><span class="mood-tag">Spaced Repetition</span></div>
+      <div class="mood-card"><span class="mood-emoji">😵</span><h3>Overwhelmed</h3><p>Task breakdown first. White noise. 15-min micro-blocks so nothing feels too big.</p><span class="mood-tag">Micro Deep Work</span></div>
+      <div class="mood-card"><span class="mood-emoji">😊</span><h3>Focused</h3><p>Jazz chords for deep concentration. Long blocks to ride the wave.</p><span class="mood-tag">Deep Work 50/10</span></div>
+      <div class="mood-card"><span class="mood-emoji">😐</span><h3>Calm</h3><p>Piano & ambient drones. Flexible sessions. You choose your pace.</p><span class="mood-tag">Custom Flow</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <div class="section-title"><h2>From students who get it</h2><p>Not productivity gurus. Just people who needed a calmer way to study.</p></div>
+    <div class="testimonials-grid">
+      <div class="testimonial"><div class="stars">★★★★★</div><p class="testimonial-text">"I've tried every productivity app and they all make me feel more anxious. MindDraft is the first one that actually starts by asking how I feel. That small thing changed everything."</p><div class="testimonial-author"><div class="author-avatar" style="background:var(--lavender-light);">🌸</div><div class="author-info"><strong>Mia R.</strong><span>Pre-med sophomore</span></div></div></div>
+      <div class="testimonial"><div class="stars">★★★★★</div><p class="testimonial-text">"The lo-fi music is genuinely good. It's not just noise — it actually sounds like something I'd put on a playlist. And knowing it's running locally feels weirdly cozy."</p><div class="testimonial-author"><div class="author-avatar" style="background:#e8f5e8;">🎯</div><div class="author-info"><strong>Daniel K.</strong><span>Computer science junior</span></div></div></div>
+      <div class="testimonial"><div class="stars">★★★★★</div><p class="testimonial-text">"The breathing exercise before sessions sounds basic but I was skeptical. Two weeks in, I haven't had a single anxiety spiral mid-study. It works."</p><div class="testimonial-author"><div class="author-avatar" style="background:#fff3e0;">🍂</div><div class="author-info"><strong>Sofia L.</strong><span>High school senior</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-title"><h2>Simple, honest pricing</h2><p>Free forever for the core experience. Upgrade when you're ready.</p></div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Free</h3><div class="price">$0<span>/forever</span></div>
+        <p class="pricing-desc">Everything you need to start studying without the pressure.</p>
+        <ul class="pricing-features">
+          <li>Mood check-in before each session</li>
+          <li>Pomodoro & custom focus timer</li>
+          <li>5 music modes (lo-fi, piano, jazz, ambient, rain)</li>
+          <li>Daily study log & mood trends</li>
+          <li>Guided breathing exercises</li>
+          <li>Up to 7 days of history</li>
+        </ul>
+        <button class="btn-plan btn-free" onclick="openApp()">Start free</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="popular-badge">✨ Most loved</div>
+        <h3>Premium</h3><div class="price">$4.99<span>/mo</span></div>
+        <p class="pricing-desc">For students who want deeper insights and a richer environment.</p>
+        <ul class="pricing-features">
+          <li>Everything in Free</li>
+          <li>20+ ambient sound scenes</li>
+          <li>AI-generated personalized study plans</li>
+          <li>Weekly mental health snapshot</li>
+          <li>Streak rewards & custom goals</li>
+          <li>Export logs as PDF</li>
+          <li>Unlimited session history</li>
+        </ul>
+        <button class="btn-plan btn-premium" onclick="window.open('https://minddraft.lemonsqueezy.com/checkout/buy/168008e1-80a7-44fb-8696-2f19846fc8d7','_blank')">Try free for 7 days</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner">
+  <h2>You don't have to earn the right to study calmly.</h2>
+  <p>MindDraft is here for the hard days, the tired days, and the days you can't quite start.</p>
+  <button class="btn-white" onclick="openApp()">Start your first session free →</button>
+</div>
+
+<footer>
+  <div class="footer-logo">🌿 MindDraft</div>
+  <p>Built for students who feel too much and sleep too little.<br/>A calm corner of the internet, just for you.</p>
+  <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a><a href="#">For Schools</a></div>
+  <p style="margin-top:20px;font-size:0.78rem;opacity:0.4;">© 2025 MindDraft · Made with care</p>
+</footer>
+
+<!-- ─── APP OVERLAY ─── -->
+<div id="app-overlay">
+  <div class="app-nav">
+    <div class="app-nav-logo">🌿 MindDraft</div>
+    <button class="app-close" onclick="closeApp()">✕</button>
+  </div>
+  <div class="app-tabs">
+    <button class="app-tab active" onclick="showView('mood')" id="tab-mood">🫀 Check-in</button>
+    <button class="app-tab" onclick="showView('timer')" id="tab-timer">⏱️ Timer</button>
+    <button class="app-tab" onclick="showView('journal')" id="tab-journal">📓 Journal</button>
+    <button class="app-tab" onclick="showView('log')" id="tab-log">📊 Study Log</button>
+    <button class="app-tab" onclick="showView('music')" id="tab-music">🎵 Music</button>
+  </div>
+  <div class="app-content">
+
+    <!-- MOOD CHECK-IN -->
+    <div class="app-view active" id="view-mood">
+      <div class="mood-checkin-title">
+        <h2>How are you feeling?</h2>
+        <p>Pick what's closest. There's no wrong answer.</p>
+      </div>
+      <div class="mood-grid">
+        <div class="mood-btn" onclick="selectMood('stressed')" id="mbtn-stressed"><span class="em">😰</span><span class="label">Stressed</span></div>
+        <div class="mood-btn" onclick="selectMood('tired')" id="mbtn-tired"><span class="em">😴</span><span class="label">Tired</span></div>
+        <div class="mood-btn" onclick="selectMood('overwhelmed')" id="mbtn-overwhelmed"><span class="em">😵</span><span class="label">Over-<br>whelmed</span></div>
+        <div class="mood-btn" onclick="selectMood('focused')" id="mbtn-focused"><span class="em">😊</span><span class="label">Focused</span></div>
+        <div class="mood-btn" onclick="selectMood('calm')" id="mbtn-calm"><span class="em">😐</span><span class="label">Calm</span></div>
+      </div>
+      <div class="mood-recommendation" id="mood-rec">
+        <div class="rec-title">Your personalized setup</div>
+        <div class="rec-grid">
+          <div class="rec-item"><div class="rec-icon" id="rec-sound-icon">🎵</div><h4>Music</h4><p id="rec-sound-desc">Lo-fi beats</p></div>
+          <div class="rec-item"><div class="rec-icon" id="rec-tech-icon">🍅</div><h4 id="rec-tech-title">Technique</h4><p id="rec-tech-desc">Pomodoro 25/5</p></div>
+        </div>
+      </div>
+      <div class="breathing-box" id="breathing-box" style="display:none;">
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Before you start — take a breath 🌬️</p>
+        <div class="breathing-circle" id="breath-circle" onclick="startBreathing()">Tap to<br>breathe</div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px;" id="breath-instructions">4-7-8 breathing · Tap to begin</p>
+      </div>
+      <div style="margin-top:20px;text-align:center;">
+        <button class="btn-primary" onclick="showView('timer')" id="begin-session" style="display:none;">Begin Session →</button>
+      </div>
+    </div>
+
+    <!-- TIMER -->
+    <div class="app-view" id="view-timer">
+      <div class="timer-container">
+        <div class="timer-modes">
+          <button class="timer-mode-btn active" onclick="setMode('pomodoro',this)">Pomodoro</button>
+          <button class="timer-mode-btn" onclick="setMode('deep',this)">Deep Work</button>
+          <button class="timer-mode-btn" onclick="setMode('custom',this)">Custom</button>
+        </div>
+        <div class="timer-ring">
+          <svg width="220" height="220" viewBox="0 0 220 220">
+            <circle class="timer-ring-bg" cx="110" cy="110" r="96"/>
+            <circle class="timer-ring-fg" cx="110" cy="110" r="96" id="timer-arc" stroke-dasharray="603" stroke-dashoffset="0"/>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-big" id="timer-display">25:00</div>
+            <div class="timer-phase" id="timer-phase">Focus Session</div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="timer-btn timer-reset" onclick="resetTimer()">↺</button>
+          <button class="timer-btn timer-start" onclick="toggleTimer()" id="timer-play-btn">▶</button>
+          <button class="timer-btn timer-skip" onclick="skipPhase()">⏭</button>
+        </div>
+        <div class="pomodoro-dots" id="pom-dots">
+          <div class="pom-dot current"></div><div class="pom-dot"></div><div class="pom-dot"></div><div class="pom-dot"></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:16px;" id="timer-session-count">Session 1 of 4</p>
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="app-view" id="view-journal">
+      <div class="journal-header">
+        <h2>Your quiet space</h2>
+        <div class="journal-date" id="journal-date"></div>
+      </div>
+      <div class="journal-mood-row">
+        <span style="font-size:0.8rem;color:var(--text-muted);align-self:center;">Tag:</span>
+        <div class="journal-mood-tag" onclick="tagMood(this,'😰 Stressed')">😰 Stressed</div>
+        <div class="journal-mood-tag" onclick="tagMood(this,'😴 Tired')">😴 Tired</div>
+        <div class="journal-mood-tag" onclick="tagMood(this,'😵 Overwhelmed')">😵 Overwhelmed</div>
+        <div class="journal-mood-tag" onclick="tagMood(this,'😊 Focused')">😊 Focused</div>
+        <div class="journal-mood-tag" onclick="tagMood(this,'😐 Calm')">😐 Calm</div>
+      </div>
+      <textarea class="journal-textarea" id="journal-text" placeholder="What's on your mind? You can write anything here — what you studied, how you felt, what's worrying you. It's just for you."></textarea>
+      <button class="journal-save" onclick="saveEntry()">Save entry ✓</button>
+      <div class="journal-entries" id="journal-entries"></div>
+    </div>
+
+    <!-- STUDY LOG -->
+    <div class="app-view" id="view-log">
+      <div style="margin-bottom:20px;"><h2 style="font-size:1.3rem;font-weight:400;margin-bottom:4px;">This week</h2><p style="font-size:0.85rem;color:var(--text-muted);">Your mood & focus patterns</p></div>
+      <div class="log-stats">
+        <div class="log-stat"><div class="log-stat-num" id="stat-sessions">0</div><div class="log-stat-label">Sessions</div></div>
+        <div class="log-stat"><div class="log-stat-num" id="stat-minutes">0</div><div class="log-stat-label">Minutes</div></div>
+        <div class="log-stat"><div class="log-stat-num" id="stat-streak">0</div><div class="log-stat-label">Day streak</div></div>
+      </div>
+      <div class="mood-chart">
+        <h3>Mood this week</h3>
+        <div class="chart-bars">
+          <div class="chart-day"><div class="chart-bar" style="height:60px;background:var(--lavender-light);"></div><div class="chart-day-label">Mon</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:40px;background:var(--sage-light);"></div><div class="chart-day-label">Tue</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:80px;background:var(--lavender-light);"></div><div class="chart-day-label">Wed</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:55px;background:var(--sage-light);"></div><div class="chart-day-label">Thu</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:70px;background:var(--lavender-light);"></div><div class="chart-day-label">Fri</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:30px;background:var(--beige-dark);"></div><div class="chart-day-label">Sat</div></div>
+          <div class="chart-day"><div class="chart-bar" style="height:20px;background:var(--beige-dark);"></div><div class="chart-day-label">Sun</div></div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:12px;font-size:0.75rem;color:var(--text-muted);flex-wrap:wrap;">
+          <span>🟣 Stressed/Overwhelmed</span><span>🟢 Focused/Calm</span><span>⬜ Low energy</span>
+        </div>
+      </div>
+      <div class="log-table-container">
+        <table class="log-table">
+          <thead><tr><th>Date</th><th>Subject</th><th>Mood</th><th>Duration</th></tr></thead>
+          <tbody id="log-table-body"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No sessions yet. Start your first one! ✨</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="app-view" id="view-music">
+      <!-- Now Playing Card -->
+      <div id="now-playing-card" class="now-playing-card" style="display:none;">
+        <div class="np-top">
+          <div class="np-art" id="np-art">🎵</div>
+          <div class="np-meta">
+            <h3 id="np-track-name">—</h3>
+            <p id="np-track-desc">Not playing</p>
+          </div>
+        </div>
+        <div class="np-visualizer" id="np-viz"></div>
+        <div class="np-controls">
+          <button class="np-btn" onclick="prevTrack()" title="Previous">⏮</button>
+          <button class="np-btn primary" onclick="toggleCurrentTrack()" id="np-play-btn">▶</button>
+          <button class="np-btn" onclick="nextTrack()" title="Next">⏭</button>
+          <div class="np-vol-wrap">
+            <span class="np-vol-icon">🔈</span>
+            <input type="range" class="np-vol" min="0" max="100" value="60" oninput="setMusicVolume(this.value)">
+            <span class="np-vol-icon">🔊</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Track List -->
+      <div class="settings-section">
+        <h3>🎵 Music</h3>
+        <div class="music-list" id="music-list">
+          <div class="music-item" onclick="selectTrack(0,this)" data-id="lofi">
+            <div class="mi-icon">🎹</div>
+            <div class="mi-info"><h4>Lo-fi Beats</h4><p>Jazzy chords · bass · soft melody · vinyl crackle</p></div>
+            <div class="mi-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="music-item" onclick="selectTrack(1,this)" data-id="piano">
+            <div class="mi-icon">🎼</div>
+            <div class="mi-info"><h4>Solo Piano</h4><p>Gentle arpeggios in C major · slow and breathing</p></div>
+            <div class="mi-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="music-item" onclick="selectTrack(2,this)" data-id="jazz">
+            <div class="mi-icon">🎺</div>
+            <div class="mi-info"><h4>Jazz Study</h4><p>ii–V–I progressions · walking bass · warm pads</p></div>
+            <div class="mi-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="music-item" onclick="selectTrack(3,this)" data-id="ambient">
+            <div class="mi-icon">🌌</div>
+            <div class="mi-info"><h4>Ambient Drift</h4><p>Slow evolving pads · deep drone · spacious textures</p></div>
+            <div class="mi-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="music-item" onclick="selectTrack(4,this)" data-id="nature">
+            <div class="mi-icon">🌧️</div>
+            <div class="mi-info"><h4>Rain + Piano</h4><p>Soft rain ambience blended with piano notes</p></div>
+            <div class="mi-eq"><span></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ambient Blend -->
+      <div class="settings-section">
+        <h3>🌿 Ambient Layers</h3>
+        <div class="ambient-blend">
+          <span>🌧️ Rain</span>
+          <input type="range" class="blend-vol" min="0" max="100" value="0" oninput="setAmbientVol('rain',this.value)" id="rain-vol">
+        </div>
+        <div class="ambient-blend">
+          <span>🤍 White Noise</span>
+          <input type="range" class="blend-vol" min="0" max="100" value="0" oninput="setAmbientVol('white',this.value)" id="white-vol">
+        </div>
+        <div class="ambient-blend">
+          <span>🔥 Fireplace</span>
+          <input type="range" class="blend-vol" min="0" max="100" value="0" oninput="setAmbientVol('fire',this.value)" id="fire-vol">
+        </div>
+      </div>
+
+      <!-- Prefs -->
+      <div class="settings-section">
+        <h3>⚙️ Preferences</h3>
+        <div class="toggle-row"><span>Break reminders</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Breathing prompt when stressed</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Auto-start music on session start</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+
+      <div class="upgrade-banner">
+        <h3>✨ Unlock Premium</h3>
+        <p>AI study plans, 20+ ambient scenes, weekly mental health snapshot, and streak rewards — $4.99/mo.</p>
+        <button class="btn-upgrade" onclick="window.open('https://minddraft.lemonsqueezy.com/checkout/buy/168008e1-80a7-44fb-8696-2f19846fc8d7','_blank')">Try free for 7 days</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FLOATING BAR -->
+<div class="audio-bar" id="audio-bar">
+  <div class="audio-wave"><span></span><span></span><span></span></div>
+  <span id="audio-label">🎵 Playing</span>
+  <button class="audio-stop" onclick="stopAllAudio()">Stop ✕</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//   STATE
+// ════════════════════════════════════════════════
+let currentMood = null;
+let timerInterval = null;
+let timerRunning = false;
+let timerSeconds = 25 * 60;
+let timerTotal = 25 * 60;
+let timerPhase = 'focus';
+let pomSession = 1, pomTotal = 4;
+let currentMode = 'pomodoro';
+let selectedJournalMood = '';
+let sessions = JSON.parse(localStorage.getItem('md_sessions') || '[]');
+let journalEntries = JSON.parse(localStorage.getItem('md_journal') || '[]');
+
+// Audio
+let audioCtx = null;
+let musicVolume = 0.6;
+let currentTrackIndex = -1;
+let currentTrackEl = null;
+let musicPlaying = false;
+
+// Scheduled nodes/timeouts
+let musicTimeout = null;
+let musicNodes = [];
+
+// Ambient layer gains
+let ambientGains = { rain: null, white: null, fire: null };
+let ambientSources = { rain: null, white: null, fire: null };
+
+// ════════════════════════════════════════════════
+//   APP
+// ════════════════════════════════════════════════
+function openApp() {
+  document.getElementById('app-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateLog(); updateJournalDate(); renderJournalEntries();
+}
+function closeApp() {
+  document.getElementById('app-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function showView(v) {
+  document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.app-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.getElementById('tab-' + v).classList.add('active');
+  if (v === 'log') updateLog();
+}
+
+// ════════════════════════════════════════════════
+//   MOOD
+// ════════════════════════════════════════════════
+const moodData = {
+  stressed:    { sound: '🌧️', soundName: 'Rain + Piano', trackId: 4, tech: '🍅', techName: 'Pomodoro 25/5', breathing: true, focus: 25, brk: 5 },
+  tired:       { sound: '🎹', soundName: 'Lo-fi Beats', trackId: 0, tech: '🔁', techName: 'Spaced Repetition', breathing: false, focus: 20, brk: 10 },
+  overwhelmed: { sound: '🌌', soundName: 'Ambient Drift', trackId: 3, tech: '🧩', techName: 'Micro Deep Work', breathing: true, focus: 15, brk: 5 },
+  focused:     { sound: '🎺', soundName: 'Jazz Study', trackId: 2, tech: '🎯', techName: 'Deep Work 50/10', breathing: false, focus: 50, brk: 10 },
+  calm:        { sound: '🎼', soundName: 'Solo Piano', trackId: 1, tech: '🌊', techName: 'Custom Flow', breathing: false, focus: 30, brk: 10 },
+};
+function selectMood(mood) {
+  currentMood = mood;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('mbtn-' + mood).classList.add('selected');
+  const d = moodData[mood];
+  document.getElementById('rec-sound-icon').textContent = d.sound;
+  document.getElementById('rec-sound-desc').textContent = d.soundName;
+  document.getElementById('rec-tech-icon').textContent = d.tech;
+  document.getElementById('rec-tech-desc').textContent = d.techName;
+  document.getElementById('mood-rec').classList.add('visible');
+  document.getElementById('breathing-box').style.display = d.breathing ? 'block' : 'none';
+  document.getElementById('begin-session').style.display = 'inline-flex';
+  timerTotal = d.focus * 60; timerSeconds = timerTotal;
+  updateTimerDisplay();
+}
+
+// ════════════════════════════════════════════════
+//   BREATHING
+// ════════════════════════════════════════════════
+let breathTimeout = null;
+const breathPhases = [
+  { text: 'Inhale…', dur: 4000, expand: true },
+  { text: 'Hold…', dur: 7000, expand: true },
+  { text: 'Exhale…', dur: 8000, expand: false },
+];
+function startBreathing() {
+  if (breathTimeout) return;
+  function run(i) {
+    const p = breathPhases[i % 3];
+    document.getElementById('breath-circle').textContent = p.text;
+    document.getElementById('breath-instructions').textContent = `Cycle ${Math.floor(i/3)+1} of 3 · ${p.text}`;
+    document.getElementById('breath-circle').classList.toggle('expand', p.expand);
+    breathTimeout = setTimeout(() => {
+      if (i >= 8) { breathTimeout = null; document.getElementById('breath-circle').textContent = '✓ Done'; document.getElementById('breath-instructions').textContent = 'Ready to study 🌿'; document.getElementById('breath-circle').classList.remove('expand'); return; }
+      run(i + 1);
+    }, p.dur);
+  }
+  run(0);
+}
+
+// ════════════════════════════════════════════════
+//   TIMER
+// ════════════════════════════════════════════════
+function setMode(m, btn) {
+  currentMode = m;
+  document.querySelectorAll('.timer-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = { pomodoro:[25,5], deep:[50,10], custom:[30,5] }[m];
+  timerTotal = d[0]*60; timerSeconds = timerTotal; timerPhase = 'focus';
+  updateTimerDisplay(); resetTimer();
+}
+function toggleTimer() { timerRunning ? pauseTimer() : startTimer(); }
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById('timer-play-btn').textContent = '⏸';
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    if (timerSeconds <= 0) {
+      const d = { pomodoro:[25,5], deep:[50,10], custom:[30,5] }[currentMode];
+      if (timerPhase === 'focus') { timerPhase = 'break'; timerSeconds = d[1]*60; timerTotal = timerSeconds; logSession(); }
+      else { timerPhase = 'focus'; pomSession = Math.min(pomSession+1, pomTotal); updatePomDots(); timerSeconds = d[0]*60; timerTotal = timerSeconds; }
+      document.getElementById('timer-phase').textContent = timerPhase === 'focus' ? 'Focus Session' : '☕ Break Time';
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+function pauseTimer() { timerRunning = false; clearInterval(timerInterval); document.getElementById('timer-play-btn').textContent = '▶'; }
+function resetTimer() {
+  pauseTimer();
+  const d = { pomodoro:[25,5], deep:[50,10], custom:[30,5] }[currentMode];
+  timerTotal = d[0]*60; timerSeconds = timerTotal; timerPhase = 'focus';
+  document.getElementById('timer-phase').textContent = 'Focus Session';
+  updateTimerDisplay();
+}
+function skipPhase() { timerSeconds = 0; }
+function updateTimerDisplay() {
+  const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+  const s = String(timerSeconds%60).padStart(2,'0');
+  document.getElementById('timer-display').textContent = m+':'+s;
+  const pct = timerSeconds/timerTotal;
+  const circ = 2*Math.PI*96;
+  const arc = document.getElementById('timer-arc');
+  if (arc) { arc.setAttribute('stroke-dasharray', circ); arc.setAttribute('stroke-dashoffset', circ*(1-pct)); }
+}
+function updatePomDots() {
+  document.querySelectorAll('.pom-dot').forEach((d,i) => {
+    d.classList.remove('done','current');
+    if (i < pomSession-1) d.classList.add('done'); else if (i === pomSession-1) d.classList.add('current');
+  });
+  document.getElementById('timer-session-count').textContent = 'Session '+pomSession+' of '+pomTotal;
+}
+
+// ════════════════════════════════════════════════
+//   JOURNAL
+// ════════════════════════════════════════════════
+function updateJournalDate() {
+  document.getElementById('journal-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+}
+function tagMood(el, tag) {
+  document.querySelectorAll('.journal-mood-tag').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected'); selectedJournalMood = tag;
+}
+function saveEntry() {
+  const text = document.getElementById('journal-text').value.trim();
+  if (!text) return;
+  journalEntries.unshift({ text, mood: selectedJournalMood||'✏️ Note', date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) });
+  localStorage.setItem('md_journal', JSON.stringify(journalEntries));
+  document.getElementById('journal-text').value = '';
+  selectedJournalMood = '';
+  document.querySelectorAll('.journal-mood-tag').forEach(t => t.classList.remove('selected'));
+  renderJournalEntries();
+}
+function renderJournalEntries() {
+  const c = document.getElementById('journal-entries');
+  if (!journalEntries.length) { c.innerHTML=''; return; }
+  c.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">Previous entries</p>' +
+    journalEntries.slice(0,5).map(e=>`<div class="journal-entry"><div class="entry-meta"><span class="entry-date">${e.date}</span><span class="entry-mood-badge">${e.mood}</span></div><div class="entry-text">${e.text}</div></div>`).join('');
+}
+
+// ════════════════════════════════════════════════
+//   STUDY LOG
+// ════════════════════════════════════════════════
+function logSession() {
+  const d = { pomodoro:25, deep:50, custom:30 }[currentMode];
+  sessions.unshift({ date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}), subject:'Study Session', mood:currentMood||'calm', duration:d+' min' });
+  localStorage.setItem('md_sessions', JSON.stringify(sessions)); updateLog();
+}
+function updateLog() {
+  document.getElementById('stat-sessions').textContent = sessions.length;
+  document.getElementById('stat-minutes').textContent = sessions.reduce((a,s)=>a+(parseInt(s.duration)||25),0);
+  document.getElementById('stat-streak').textContent = Math.min(sessions.length,7);
+  const tb = document.getElementById('log-table-body');
+  tb.innerHTML = sessions.length ? sessions.slice(0,10).map(s=>`<tr><td>${s.date}</td><td>${s.subject}</td><td>${s.mood}</td><td>${s.duration}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No sessions yet. Start your first one! ✨</td></tr>';
+}
+
+// ════════════════════════════════════════════════
+//   AUDIO ENGINE
+// ════════════════════════════════════════════════
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// ── Utility: make buffer of shaped noise ──
+function makeNoise(ctx, secs, amplitude, filterFreq, filterType) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate*secs, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i=0; i<d.length; i++) d[i]=(Math.random()*2-1)*amplitude;
+  const src = ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+  if (filterFreq) {
+    const f = ctx.createBiquadFilter(); f.type=filterType||'lowpass'; f.frequency.value=filterFreq;
+    src.connect(f); return { source:src, output:f };
+  }
+  return { source:src, output:src };
+}
+
+// ── Utility: create oscillator with envelope ──
+function playNote(ctx, dest, freq, type, startTime, duration, volume, detune=0) {
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  osc.detune.value = detune;
+  env.gain.setValueAtTime(0, startTime);
+  env.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+  env.gain.setValueAtTime(volume, startTime + duration * 0.7);
+  env.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.connect(env); env.connect(dest);
+  osc.start(startTime); osc.stop(startTime + duration + 0.05);
+  return osc;
+}
+
+// ── MASTER GAIN for music ──
+let masterGain = null;
+function getMasterGain(ctx) {
+  if (!masterGain) {
+    masterGain = ctx.createGain();
+    masterGain.gain.value = musicVolume;
+    masterGain.connect(ctx.destination);
+  }
+  return masterGain;
+}
+
+// ────────────────────────────────────────────────
+//   TRACK DEFINITIONS
+// ────────────────────────────────────────────────
+const TRACKS = [
+  {
+    id: 'lofi', name: 'Lo-fi Beats', desc: 'Jazzy chords · bass · vinyl crackle',
+    art: '🎹', artBg: 'linear-gradient(135deg,#2d1b3d,#1a2d1a)',
+    bars: ['#a39','#8b7','#a39','#7a6','#b8a','#9b8','#a39','#7a6','#b9c','#8a7','#a39','#96b']
+  },
+  {
+    id: 'piano', name: 'Solo Piano', desc: 'Gentle arpeggios · C major · breathing',
+    art: '🎼', artBg: 'linear-gradient(135deg,#1a1a2e,#162d16)',
+    bars: ['#8af','#79e','#8af','#6bd','#9ae','#7bf','#8af','#68d','#9bf','#7ae','#8af','#79e']
+  },
+  {
+    id: 'jazz', name: 'Jazz Study', desc: 'ii–V–I · walking bass · warm pads',
+    art: '🎺', artBg: 'linear-gradient(135deg,#2d1a0a,#2a2010)',
+    bars: ['#d94','#c83','#d94','#b72','#e85','#c73','#d94','#b62','#e94','#c83','#d84','#c73']
+  },
+  {
+    id: 'ambient', name: 'Ambient Drift', desc: 'Slow pads · deep drone · spacious',
+    art: '🌌', artBg: 'linear-gradient(135deg,#0d0d1a,#0d1a0d)',
+    bars: ['#46b','#35a','#46b','#259','#57c','#36a','#46b','#25a','#57c','#36b','#46b','#35a']
+  },
+  {
+    id: 'nature', name: 'Rain + Piano', desc: 'Soft rain ambience with piano notes',
+    art: '🌧️', artBg: 'linear-gradient(135deg,#1a2030,#162020)',
+    bars: ['#6ab','#59a','#6ab','#489','#7bc','#5aa','#6ab','#489','#7bc','#5ab','#6ab','#59a']
+  }
+];
+
+// ────────────────────────────────────────────────
+//   MUSIC ENGINE — each track generator
+// ────────────────────────────────────────────────
+
+// NOTE FREQUENCIES
+const NOTE = {
+  C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196, A3:220, B3:246.94,
+  C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392, A4:440, B4:493.88,
+  C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880,
+  Bb3:233.08, Bb4:466.16, Db4:277.18, Eb4:311.13, Ab3:207.65, Ab4:415.30
+};
+
+// ── LO-FI ENGINE ──
+function startLofi(ctx, dest) {
+  const nodes = [];
+  const BPM = 75;
+  const BEAT = 60 / BPM;
+  const BAR = BEAT * 4;
+
+  // Jazz chord progression: Cmaj7 Am7 Fmaj7 G7
+  const chords = [
+    [NOTE.C4, NOTE.E4, NOTE.G4, NOTE.B4],   // Cmaj7
+    [NOTE.A3, NOTE.C4, NOTE.E4, NOTE.G4],   // Am7
+    [NOTE.F3, NOTE.A3, NOTE.C4, NOTE.E4],   // Fmaj7
+    [NOTE.G3, NOTE.B3, NOTE.D4, NOTE.F4],   // G7
+  ];
+  const bassNotes = [NOTE.C3, NOTE.A3, NOTE.F3, NOTE.G3];
+
+  // Vinyl crackle
+  const crackle = makeNoise(ctx, 0.5, 0.015, 6000, 'highpass');
+  crackle.source.connect(dest);
+  crackle.source.start();
+  nodes.push(crackle.source);
+
+  // Looping scheduler
+  let loopStart = ctx.currentTime + 0.05;
+  let stopped = false;
+
+  function scheduleBar(barTime, chordIdx) {
+    if (stopped) return;
+    const chord = chords[chordIdx];
+    const bass = bassNotes[chordIdx];
+
+    // Chord pads — soft, slightly detuned
+    chord.forEach((freq, i) => {
+      const n = playNote(ctx, dest, freq, 'triangle', barTime + 0.01, BAR * 0.85, 0.045, (i%2===0 ? -3 : 3));
+      nodes.push(n);
+    });
+
+    // Bass — root on 1, fifth on 3
+    nodes.push(playNote(ctx, dest, bass, 'sine', barTime, BEAT*0.8, 0.18));
+    nodes.push(playNote(ctx, dest, bass, 'sine', barTime + BEAT*2, BEAT*0.8, 0.14));
+
+    // Hi-hat pattern (clicks via noise bursts)
+    for (let b=0; b<8; b++) {
+      const hh = ctx.createBufferSource();
+      const hbuf = ctx.createBuffer(1, ctx.sampleRate*0.04, ctx.sampleRate);
+      const hd = hbuf.getChannelData(0);
+      for (let i=0; i<hd.length; i++) hd[i] = (Math.random()*2-1) * (i < hd.length*0.1 ? i/(hd.length*0.1) : Math.max(0,1-(i-hd.length*0.1)/(hd.length*0.9)));
+      hh.buffer = hbuf;
+      const hhg = ctx.createGain(); hhg.gain.value = b%2===0 ? 0.06 : 0.03;
+      const hhf = ctx.createBiquadFilter(); hhf.type='highpass'; hhf.frequency.value=8000;
+      hh.connect(hhf); hhf.connect(hhg); hhg.connect(dest);
+      hh.start(barTime + b * BEAT * 0.5);
+      nodes.push(hh);
+    }
+
+    // Kick on 1 & 3 (sine thump)
+    [0, BEAT*2].forEach(offset => {
+      const kick = playNote(ctx, dest, 60, 'sine', barTime+offset, 0.3, 0.35);
+      const kickFreq = kick.frequency;
+      kickFreq.setValueAtTime(120, barTime+offset);
+      kickFreq.exponentialRampToValueAtTime(40, barTime+offset+0.15);
+      nodes.push(kick);
+    });
+
+    // Melody — pentatonic note every 2 beats, sometimes
+    if (Math.random() > 0.35) {
+      const penta = [NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5, NOTE.A5];
+      const melFreq = penta[Math.floor(Math.random()*penta.length)];
+      const melTime = barTime + BEAT * Math.floor(Math.random()*3);
+      nodes.push(playNote(ctx, dest, melFreq, 'sine', melTime, BEAT*0.6, 0.04));
+    }
+  }
+
+  let barIdx = 0;
+  function tick() {
+    if (stopped) return;
+    const now = ctx.currentTime;
+    while (loopStart < now + 1.0) {
+      scheduleBar(loopStart, barIdx % 4);
+      loopStart += BAR;
+      barIdx++;
+    }
+    musicTimeout = setTimeout(tick, 400);
+  }
+  tick();
+
+  return { nodes, stop: () => { stopped=true; clearTimeout(musicTimeout); nodes.forEach(n=>{ try{n.stop();}catch(e){} }); } };
+}
+
+// ── SOLO PIANO ENGINE ──
+function startPiano(ctx, dest) {
+  const nodes = [];
+  let stopped = false;
+  // C major arpeggio pattern: C E G C E G B A G E
+  const patterns = [
+    [NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5,NOTE.E5,NOTE.G4,NOTE.E4,NOTE.C4],
+    [NOTE.A3,NOTE.C4,NOTE.E4,NOTE.A4,NOTE.E4,NOTE.C4,NOTE.A3,NOTE.E4],
+    [NOTE.F3,NOTE.A3,NOTE.C4,NOTE.F4,NOTE.C4,NOTE.A3,NOTE.F3,NOTE.A3],
+    [NOTE.G3,NOTE.B3,NOTE.D4,NOTE.G4,NOTE.D4,NOTE.B3,NOTE.G3,NOTE.B3],
+  ];
+  const STEP = 0.42;
+  let t = ctx.currentTime + 0.05;
+  let patIdx = 0, noteIdx = 0;
+  let stopped2 = false;
+
+  function schedule() {
+    if (stopped2) return;
+    while (t < ctx.currentTime + 2.0) {
+      const pat = patterns[patIdx % patterns.length];
+      const freq = pat[noteIdx % pat.length];
+      nodes.push(playNote(ctx, dest, freq, 'sine', t, STEP*1.6, 0.07));
+      // Soft second harmonic
+      nodes.push(playNote(ctx, dest, freq*2, 'sine', t, STEP*1.2, 0.015));
+      noteIdx++;
+      if (noteIdx % pat.length === 0) patIdx++;
+      t += STEP + (Math.random()*0.04 - 0.02); // slight timing humanization
+    }
+    musicTimeout = setTimeout(schedule, 600);
+  }
+  schedule();
+  return { nodes, stop: () => { stopped2=true; clearTimeout(musicTimeout); nodes.forEach(n=>{try{n.stop();}catch(e){}}); } };
+}
+
+// ── JAZZ ENGINE ──
+function startJazz(ctx, dest) {
+  const nodes = [];
+  // ii-V-I in C: Dm7 G7 Cmaj7 Cmaj7
+  const chords = [
+    [NOTE.D4, NOTE.F4, NOTE.A4, NOTE.C5],  // Dm7
+    [NOTE.G3, NOTE.B3, NOTE.D4, NOTE.F4],  // G7
+    [NOTE.C4, NOTE.E4, NOTE.G4, NOTE.B4],  // Cmaj7
+    [NOTE.C4, NOTE.E4, NOTE.G4, NOTE.B4],
+  ];
+  const bassWalk = [
+    [NOTE.D3, NOTE.E3, NOTE.F3, NOTE.G3],
+    [NOTE.G3, NOTE.A3, NOTE.B3, NOTE.C4],
+    [NOTE.C3, NOTE.D3, NOTE.E3, NOTE.F3],
+    [NOTE.F3, NOTE.E3, NOTE.D3, NOTE.C3],
+  ];
+  const BPM = 110;
+  const BEAT = 60/BPM;
+  let t = ctx.currentTime + 0.05;
+  let barIdx = 0;
+  let stopped2 = false;
+
+  // Soft reverb via convolver (simple delay-based)
+  const rev = ctx.createDelay(0.3);
+  rev.delayTime.value = 0.18;
+  const revGain = ctx.createGain(); revGain.gain.value = 0.15;
+  rev.connect(revGain); revGain.connect(dest);
+
+  function scheduleBar(bTime, ci) {
+    // Chord voicing — staggered
+    chords[ci].forEach((freq, i) => {
+      nodes.push(playNote(ctx, dest, freq, 'triangle', bTime + i*0.02, BEAT*3.5, 0.04));
+      const n2 = playNote(ctx, rev, freq, 'triangle', bTime + i*0.02, BEAT*3.5, 0.025);
+      nodes.push(n2);
+    });
+    // Walking bass
+    bassWalk[ci].forEach((freq, i) => {
+      nodes.push(playNote(ctx, dest, freq, 'sawtooth', bTime + i*BEAT, BEAT*0.75, 0.12));
+    });
+    // Ride cymbal (high noise bursts on every beat)
+    for (let b=0; b<4; b++) {
+      const ride = ctx.createBufferSource();
+      const rbuf = ctx.createBuffer(1, ctx.sampleRate*0.08, ctx.sampleRate);
+      const rd = rbuf.getChannelData(0);
+      for (let i=0; i<rd.length; i++) rd[i]=(Math.random()*2-1)*Math.pow(1-i/rd.length,1.5)*0.15;
+      ride.buffer=rbuf;
+      const rf=ctx.createBiquadFilter(); rf.type='bandpass'; rf.frequency.value=9000; rf.Q.value=0.5;
+      const rg=ctx.createGain(); rg.gain.value=0.4;
+      ride.connect(rf); rf.connect(rg); rg.connect(dest);
+      ride.start(bTime+b*BEAT); nodes.push(ride);
+    }
+  }
+
+  function tick() {
+    if (stopped2) return;
+    while (t < ctx.currentTime + 1.5) {
+      scheduleBar(t, barIdx%4);
+      t += BEAT*4; barIdx++;
+    }
+    musicTimeout = setTimeout(tick, 400);
+  }
+  tick();
+  return { nodes, stop: () => { stopped2=true; clearTimeout(musicTimeout); nodes.forEach(n=>{try{n.stop();}catch(e){}}); } };
+}
+
+// ── AMBIENT DRIFT ENGINE ──
+function startAmbient(ctx, dest) {
+  const nodes = [];
+  const droneFreqs = [NOTE.C3*0.5, NOTE.G3*0.5, NOTE.C4*0.5, NOTE.E4*0.5];
+  droneFreqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc.detune.value = (i%2===0 ? -8 : 8) + Math.random()*4;
+    env.gain.value = [0.12, 0.08, 0.06, 0.04][i];
+    osc.connect(env); env.connect(dest);
+    osc.start(); nodes.push(osc);
+  });
+  // Slow pad swells — triangle wave with LFO
+  const LFO_PERIOD = 8000;
+  let swellIdx = 0;
+  let stopped2 = false;
+
+  function swell() {
+    if (stopped2) return;
+    const ctx2 = ctx;
+    const freq = [NOTE.C4, NOTE.E4, NOTE.G4, NOTE.B4, NOTE.A4, NOTE.F4][swellIdx%6];
+    const osc = ctx2.createOscillator();
+    const env = ctx2.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    osc.detune.value = Math.random()*20-10;
+    env.gain.setValueAtTime(0, ctx2.currentTime);
+    env.gain.linearRampToValueAtTime(0.05, ctx2.currentTime+3);
+    env.gain.linearRampToValueAtTime(0.05, ctx2.currentTime+5);
+    env.gain.linearRampToValueAtTime(0, ctx2.currentTime+8);
+    osc.connect(env); env.connect(dest);
+    osc.start(); osc.stop(ctx2.currentTime+8.1);
+    nodes.push(osc); swellIdx++;
+    musicTimeout = setTimeout(swell, 5500);
+  }
+  swell();
+  // Soft noise bed
+  const nb = makeNoise(ctx, 2, 0.015, 400, 'lowpass');
+  nb.source.connect(dest); nb.source.start(); nodes.push(nb.source);
+  return { nodes, stop: () => { stopped2=true; clearTimeout(musicTimeout); nodes.forEach(n=>{try{n.stop();}catch(e){}}); } };
+}
+
+// ── RAIN + PIANO ENGINE ──
+function startRainPiano(ctx, dest) {
+  const nodes = [];
+  // Rain noise
+  const rain = makeNoise(ctx, 4, 0.25, 900, 'lowpass');
+  rain.source.connect(dest); rain.source.start(); nodes.push(rain.source);
+  // Extra hi-freq shimmer
+  const shimmer = makeNoise(ctx, 2, 0.04, 4000, 'bandpass');
+  shimmer.source.connect(dest); shimmer.source.start(); nodes.push(shimmer.source);
+
+  // Sparse piano notes
+  const notes = [NOTE.C4,NOTE.E4,NOTE.G4,NOTE.A4,NOTE.C5,NOTE.D4,NOTE.F4,NOTE.B4];
+  let t = ctx.currentTime + 1;
+  let stopped2 = false;
+
+  function scheduleNote() {
+    if (stopped2) return;
+    while (t < ctx.currentTime + 3.0) {
+      const freq = notes[Math.floor(Math.random()*notes.length)];
+      nodes.push(playNote(ctx, dest, freq, 'sine', t, 1.2+Math.random()*0.8, 0.055));
+      nodes.push(playNote(ctx, dest, freq*2, 'sine', t, 0.8, 0.015));
+      t += 1.0 + Math.random() * 2.5;
+    }
+    musicTimeout = setTimeout(scheduleNote, 1000);
+  }
+  scheduleNote();
+  return { nodes, stop: () => { stopped2=true; clearTimeout(musicTimeout); nodes.forEach(n=>{try{n.stop();}catch(e){}}); } };
+}
+
+const ENGINES = [startLofi, startPiano, startJazz, startAmbient, startRainPiano];
+
+// ────────────────────────────────────────────────
+//   MUSIC PLAYER
+// ────────────────────────────────────────────────
+let currentEngine = null;
+
+function selectTrack(idx, el) {
+  // Toggle off if same track
+  if (currentTrackIndex === idx && musicPlaying) { pauseMusic(); return; }
+  currentTrackIndex = idx;
+  if (currentTrackEl) currentTrackEl.classList.remove('active');
+  currentTrackEl = el; el.classList.add('active');
+  playMusic();
+}
+
+function playMusic() {
+  if (currentTrackIndex < 0) return;
+  stopCurrentEngine();
+  const ctx = getCtx();
+  const mg = getMasterGain(ctx);
+  currentEngine = ENGINES[currentTrackIndex](ctx, mg);
+  musicPlaying = true;
+  updateNowPlaying(true);
+  document.getElementById('np-play-btn').textContent = '⏸';
+  document.getElementById('audio-bar').classList.add('visible');
+  document.getElementById('audio-label').textContent = TRACKS[currentTrackIndex].name + ' playing';
+}
+
+function pauseMusic() {
+  stopCurrentEngine();
+  musicPlaying = false;
+  document.getElementById('np-play-btn').textContent = '▶';
+}
+
+function stopCurrentEngine() {
+  if (currentEngine) { currentEngine.stop(); currentEngine = null; }
+  clearTimeout(musicTimeout);
+}
+
+function toggleCurrentTrack() {
+  if (musicPlaying) pauseMusic(); else playMusic();
+}
+
+function prevTrack() {
+  const idx = (currentTrackIndex - 1 + TRACKS.length) % TRACKS.length;
+  const el = document.querySelectorAll('.music-item')[idx];
+  selectTrack(idx, el);
+}
+
+function nextTrack() {
+  const idx = (currentTrackIndex + 1) % TRACKS.length;
+  const el = document.querySelectorAll('.music-item')[idx];
+  selectTrack(idx, el);
+}
+
+function updateNowPlaying(playing) {
+  const t = TRACKS[currentTrackIndex];
+  const card = document.getElementById('now-playing-card');
+  card.style.display = 'block';
+  document.getElementById('np-art').textContent = t.art;
+  document.getElementById('np-art').style.background = t.artBg;
+  document.getElementById('np-track-name').textContent = t.name;
+  document.getElementById('np-track-desc').textContent = t.desc;
+  // Build visualizer bars
+  const viz = document.getElementById('np-viz');
+  viz.innerHTML = t.bars.map((color, i) => {
+    const spd = (0.6 + Math.random()*0.8).toFixed(2);
+    const delay = (Math.random()*0.5).toFixed(2);
+    const h = 4 + Math.random()*20;
+    return `<div class="np-bar ${playing?'active':''}" style="background:${color};height:${h}px;--spd:${spd}s;animation-delay:${delay}s;animation-name:${playing?'npb':'none'}"></div>`;
+  }).join('');
+}
+
+function setMusicVolume(v) {
+  musicVolume = v / 100;
+  if (masterGain) masterGain.gain.value = musicVolume;
+}
+
+// ── AMBIENT LAYER CONTROLS ──
+function ensureAmbientGain(type) {
+  const ctx = getCtx();
+  if (!ambientGains[type]) {
+    const g = ctx.createGain(); g.gain.value = 0;
+    g.connect(ctx.destination);
+    ambientGains[type] = g;
+  }
+  return ambientGains[type];
+}
+function setAmbientVol(type, val) {
+  const ctx = getCtx();
+  const gain = ensureAmbientGain(type);
+  const v = val / 100;
+  gain.gain.value = v * 0.4;
+  if (v > 0 && !ambientSources[type]) {
+    let src;
+    if (type === 'rain') {
+      const n = makeNoise(ctx, 4, 0.35, 900, 'lowpass');
+      n.source.connect(gain); n.source.start(); src = n.source;
+      const s2 = makeNoise(ctx, 2, 0.06, 4000, 'bandpass');
+      s2.source.connect(gain); s2.source.start();
+    } else if (type === 'white') {
+      const n = makeNoise(ctx, 2, 0.3);
+      n.source.connect(gain); n.source.start(); src = n.source;
+    } else if (type === 'fire') {
+      const n = makeNoise(ctx, 3, 0.2, 300, 'lowpass');
+      n.source.connect(gain); n.source.start(); src = n.source;
+    }
+    ambientSources[type] = src;
+  } else if (v === 0 && ambientSources[type]) {
+    try { ambientSources[type].stop(); } catch(e) {}
+    ambientSources[type] = null;
+  }
+  // Update audio bar
+  const anyAmbient = Object.values(ambientSources).some(s=>s!==null);
+  if (anyAmbient || musicPlaying) document.getElementById('audio-bar').classList.add('visible');
+}
+
+function stopAllAudio() {
+  stopCurrentEngine();
+  musicPlaying = false;
+  if (currentTrackEl) currentTrackEl.classList.remove('active');
+  currentTrackEl = null; currentTrackIndex = -1;
+  Object.keys(ambientSources).forEach(k => {
+    if (ambientSources[k]) { try{ambientSources[k].stop();}catch(e){} ambientSources[k]=null; }
+  });
+  ['rain-vol','white-vol','fire-vol'].forEach(id => { const el=document.getElementById(id); if(el) el.value=0; });
+  document.getElementById('audio-bar').classList.remove('visible');
+  document.getElementById('np-play-btn').textContent = '▶';
+  if (masterGain) { masterGain.disconnect(); masterGain=null; }
+}
+
+// ── INIT ──
+updateTimerDisplay();
+updateLog();
+</script>
+</body>
+</html>
